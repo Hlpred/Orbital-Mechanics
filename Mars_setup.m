@@ -15,10 +15,16 @@ s = 24.62 * 3600;
 %rotation doesn't affect the orbital maneuvers around it.
 Mars_planet = Planet(mu,R,s,0,0);
 
-%Define altidue and inertial plane of circular orbit
 altitude = 325e3;
+r = altitude + Mars_planet.radius;
+v_inf = norm(transfer_data.v_encounter);
+delta = r*sqrt(1 + 2*Mars_planet.mu/(r*v_inf^2));
+approach_dir = transfer_data.v_encounter / v_inf;
+
+%Define altidue and inertial plane of circular orbit
 i = deg2rad(18.46);
-RA = deg2rad(251);
+approach_RA = rad2deg(atan2(approach_dir(2),approach_dir(1)) + pi);
+RA = deg2rad(approach_RA);
 theta = deg2rad(43);
 
 [r_canister,v_canister,orbit_plane_normal] = Mars_planet.CircularOrbitState(altitude,i,RA,theta);
@@ -26,13 +32,8 @@ theta = deg2rad(43);
 canister_initial = struct("r_initial", r_canister, ...
                            "v_initial", v_canister, ...
                            "a_centripetal", 0);
-r = norm(r_canister);
 
-v_inf = norm(transfer_data.v_encounter);
-approach_dir = transfer_data.v_encounter / v_inf;
-delta = r*sqrt(1 + 2*Mars_planet.mu/(r*v_inf^2));
-
-offset_dir = cross(approach_dir,[0;sqrt(2)/2;sqrt(2)/2])/norm(cross(approach_dir,[0;sqrt(2)/2;sqrt(2)/2]));
+offset_dir = cross(approach_dir, orbit_plane_normal);
 
 r_orbiter = -1e9*approach_dir + delta*offset_dir;
 v_orbiter = transfer_data.v_encounter;
@@ -41,12 +42,14 @@ orbiter_initial = struct("r_initial", r_orbiter, ...
                           "v_initial", v_orbiter, ...
                           "a_centripetal", 0);
 
-delta_v = v_inf*sqrt(2)/2;
+delta_v = sqrt(v_inf^2 + (2*Mars_planet.mu)/r) - sqrt(Mars_planet.mu/r);
 little_delta = 2*asin(1/(1+(r*v_inf^2/Mars_planet.mu)));
 
 plane = cross(v_orbiter, r_orbiter)/norm(cross(v_orbiter, r_orbiter));
-rot = axang2rotm([plane',-deg2rad(45)]);
+beta = acos(1/(1+(r*v_inf^2/Mars_planet.mu)));
+burn_angle = (pi/2 - beta);
+rot = axang2rotm([plane',-burn_angle]);
 
 capture = delta_v*rot*v_orbiter/norm(v_orbiter);
 
-%open("Mars_sim.slx");
+open("Mars_sim.slx");
