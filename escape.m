@@ -6,7 +6,7 @@ equ2ecl = planet.equ2ecl;
 v_escape = equ2ecl'*transfer_data.v_escape;
 v_inf = norm(v_escape);
 
-altitude = launch_data.r_target - planet.radius;
+altitude = norm(launch_data.r_target) - planet.radius;
 [r,v] = planet.CircularOrbit(altitude);
 
 %Delta-v required to put be put on desired escape trajectory

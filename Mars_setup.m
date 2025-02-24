@@ -27,7 +27,7 @@ approach_RA = rad2deg(atan2(approach_dir(2),approach_dir(1)) + pi);
 RA = deg2rad(approach_RA);
 theta = deg2rad(43);
 
-[r_canister,v_canister,~,orbit_plane_normal] = Mars_planet.CircularOrbitState(altitude,i,RA,theta);
+[r_canister,v_canister,orbit_plane_normal] = Mars_planet.CircularOrbitState(altitude,i,RA,theta);
 
 canister_initial = struct("r_initial", r_canister, ...
                            "v_initial", v_canister, ...
