@@ -18,8 +18,6 @@ obliquity = 23.44;
 %Launch Site Latitude and Longitude
 launch_site = Launch_Site("Kourou","Earth",deg2rad([5.264693257042033; -52.792193957435764]));
 
-launch_burn_time = 0.1;
-
 %Define Earth object
 Earth_planet = Planet(mu,R,s,obliquity,deg2rad(9));
 
@@ -28,12 +26,12 @@ altitude = 300e3;
 i = deg2rad(obliquity + 1e-4);
 RA = deg2rad(0);
 
-[launch_data,launch_initial,orbit_plane_normal] = launch2orbit(Earth_planet,launch_site,altitude,i,RA);
-run("Solar_system_setup.m");
-escape_data = escape(Earth_planet,launch_site,launch_data,transfer_data,orbit_plane_normal);
+launch_burn_time = 0.1;
+launch_data = launch2orbit(Earth_planet,launch_site,altitude,i,RA,launch_burn_time);
 
-%Maximum simulation step size
-max_step_size = 10;
+run("Solar_system_setup.m");
+escape_burn_time = 1;
+escape_data = escape(Earth_planet,launch_site,launch_data,transfer_data,escape_burn_time);
 
 open("Earth_sim.slx");
-clearvars altitude angle G i M obliquity R RA s
+clearvars altitude angle G i M mu obliquity R RA s launch_burn_time escape_burn_time

@@ -1,22 +1,12 @@
-function [launch_data,launch_initial,orbit_plane_normal] = launch2orbit(planet,launch_site,altitude,i,RA)
+function launch_data = launch2orbit(planet,launch_site,altitude,i,RA,burn_time)
 
-%TODO replace with CircularOrbitState
-
-[r,v] = planet.CircularOrbit(altitude);
-%Find the unit vector normal to the plane of the orbit (z axis in perifocal
-%frame)
-Q2 = [1, 0, 0;
-      0, cos(i), sin(i);
-      0, -sin(i), cos(i)];
-Q3 = [cos(RA), sin(RA), 0;
-      -sin(RA), cos(RA), 0;
-      0, 0, 1];
-peri2geo = (Q2*Q3)';
-orbit_plane_normal = peri2geo*[0;0;1];
+%Find orbital data for desired circular orbit
+[r_vec,v_vec,orbit_plane_normal] = planet.CircularOrbitState(altitude,i,RA,0);
+r = norm(r_vec);
+v = norm(v_vec);
 
 %Find how long it takes for the launch site to be in the plane of the
-%desired orbit. Assume inertial and geocentric earth axes are aligned at
-%t=0
+%desired orbit
 site_coords = launch_site.coordinates;
 site_vec = launch_site.unit_vec;
 plane_angle = deg2rad(atan2d(orbit_plane_normal(2), orbit_plane_normal(1))) + pi;
@@ -27,33 +17,41 @@ launch_angle = acos(cot(i)*(tan(site_coords(1))));
 lower_delta = (angdiff(site_angle, plane_angle) - launch_angle)/planet.omega;
 upper_delta = (angdiff(site_angle, plane_angle) + launch_angle)/planet.omega;
 if lower_delta<0 && upper_delta<0
-    delta_t = lower_delta + 2*pi/planet.omega;
+    wait_time = lower_delta + 2*pi/planet.omega;
 elseif lower_delta<0 && upper_delta>0
-    delta_t = upper_delta;
+    wait_time = upper_delta;
 else
-    delta_t = lower_delta;
+    wait_time = lower_delta;
 end
 
+%Rotate vectors from inertial to earth fixed at t=0
 initial_rot = planet.PlanetRotation(0);
-ground2geo = planet.PlanetRotation(delta_t);
-delta_rot = initial_rot'*ground2geo;
+%Rotate vectors from inertial to earth fixed frame at t=wait_time
+launch_rot = planet.PlanetRotation(wait_time);
+%Difference between the two rotations above
+delta_rot = initial_rot'*launch_rot;
 
+%Magnitude of the planet's rotational velocity at the launch site
 site_rot_v = planet.omega*cos(site_coords(1))*r;
 
+%Find inital position, veloctiy, and centripetal acceleration
 r_initial = r*initial_rot*site_vec;
 v_initial = site_rot_v*cross([0;0;1], r_initial/norm(r_initial))/(norm(cross([0;0;1], r_initial/norm(r_initial))));
 a_centripetal = site_rot_v^2/(r*cos(site_coords(1)));
 
-r_target = r*ground2geo*site_vec;
-v_target = (v*cross(orbit_plane_normal, ground2geo*site_vec)) - delta_rot*v_initial;
+%Position and delta-v required to reach the desired orbit at launch time
+r_target = r*launch_rot*site_vec;
+v_target = (v*cross(orbit_plane_normal, launch_rot*site_vec)) - delta_rot*v_initial;
 
-launch_data = struct("delta_t", delta_t, ...
-                     "v_target", v_target, ...
-                     "r_target", r_target, ...
-                     "ground2geo", ground2geo);
-launch_initial = struct("r_initial", r_initial, ...
-                        "v_initial", v_initial, ...
-                        "a_centripetal", a_centripetal);
+launch_data = struct("wait_time", wait_time, ...
+                "v_target", v_target, ...
+                "r_target", r_target, ...
+                "burn_time", burn_time, ...
+                "ground2geo", launch_rot, ...
+                "orbit_plane_normal", orbit_plane_normal, ...
+                "r_initial", r_initial, ...
+                "v_initial", v_initial, ...
+                "a_centripetal", a_centripetal);
 
 end
 
