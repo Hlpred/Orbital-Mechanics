@@ -16,7 +16,7 @@ s = 24.62 * 3600;
 Mars_planet = Planet(mu,R,s,0,0);
 
 %Set canister orbital elements (it's in a circular orbit)
-altitude = 325e3;
+altitude = 350e3;
 i = deg2rad(18.46);
 theta = deg2rad(43);
 
