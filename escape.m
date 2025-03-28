@@ -1,4 +1,4 @@
-function escape_data = escape(planet,site,launch_data,transfer_data,burn_time)
+function escape_data = escape(planet,launch_data,transfer_data,burn_time)
 
 %Matrix to convert a vector from equatorial to the ecliptic coordinates
 equ2ecl = planet.equ2ecl;
@@ -33,9 +33,8 @@ time = wait_angle/omega_orbit;
 %Matrix that roatates vectors by one wait angle in the direciton of the
 %orbit (rotate them into their position at the time of the escape burn)
 escape_rot = axang2rotm([orbit_plane_normal', wait_angle]);
-ground2geo = planet.PlanetRotation(launch_data.wait_time);
 %Orbital velocity the moment before the escape burn starts
-v_before_escape = escape_rot*(v*cross(orbit_plane_normal, ground2geo*site.unit_vec));
+v_before_escape = escape_rot*launch_data.v_initial_orbital;
 %Delta_v to put the spacecraft on the desired escape trajectory
 v_target = v_target_transfer*(v_before_escape/norm(v_before_escape));
 

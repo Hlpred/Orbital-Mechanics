@@ -29,9 +29,9 @@ RA = deg2rad(0);
 launch_burn_time = 0.1;
 launch_data = launch2orbit(Earth_planet,launch_site,altitude,i,RA,launch_burn_time);
 
-run("Solar_system_setup.m");
+run("Hohmann_setup.m");
 escape_burn_time = 1;
-escape_data = escape(Earth_planet,launch_site,launch_data,transfer_data,escape_burn_time);
+earth_escape_data = escape(Earth_planet,launch_data,transfer_outbound_data,escape_burn_time);
 
 open("Earth_sim.slx");
 clearvars altitude angle G i M mu obliquity R RA s launch_burn_time escape_burn_time
