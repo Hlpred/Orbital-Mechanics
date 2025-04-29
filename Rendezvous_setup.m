@@ -1,9 +1,8 @@
-
 %Set canister orbital elements (it's in a circular orbit)
 canister_altitude = 350e3;
 canister_i = deg2rad(18.46);
 canister_RA = deg2rad(128);
-canister_theta = deg2rad(45);
+canister_theta = deg2rad(45.5);
 
 [r_canister,v_canister,~] = Mars_planet.CircularOrbitState(canister_altitude,canister_i,canister_RA,canister_theta);
 
@@ -65,3 +64,5 @@ Q_xX_new = rotm*Q_xX;
 
 target_1 = Q_xX*(Delta_v_0);
 target_2 = Q_xX_new*(Delta_v_f);
+
+open("Rendezvous_sim.slx");
