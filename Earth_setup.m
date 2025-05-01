@@ -33,5 +33,4 @@ run("Hohmann_setup.m");
 escape_burn_time = 1;
 earth_escape_data = escape(Earth_planet,launch_data,transfer_outbound_data,escape_burn_time);
 
-open("Earth_sim.slx");
 clearvars altitude angle G i M mu obliquity R RA s launch_burn_time escape_burn_time
