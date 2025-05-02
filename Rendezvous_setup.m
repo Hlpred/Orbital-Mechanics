@@ -1,8 +1,8 @@
 %Set canister orbital elements (it's in a circular orbit)
-canister_altitude = 350e3;
+canister_altitude = 330e3;
 canister_i = deg2rad(18.46);
 canister_RA = deg2rad(128);
-canister_theta = deg2rad(45.5);
+canister_theta = deg2rad(45);
 
 [r_canister,v_canister,~] = Mars_planet.CircularOrbitState(canister_altitude,canister_i,canister_RA,canister_theta);
 
@@ -38,7 +38,7 @@ delta_v = v_orbiter - v_canister - cross(omega,delta_r);
 delta_r_0 = Q_xX'*delta_r;
 delta_v_0_minus = Q_xX'*delta_v;
 
-t = 1000;
+t = 500;
 
 Phi_rr = [4-3*cos(n*t) 0 0;
           6*(sin(n*t)-n*t) 1 0;

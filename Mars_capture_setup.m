@@ -23,5 +23,4 @@ theta = deg2rad(43);
 %Find the inital position
 capture_data = capture(Mars_planet,altitude,i,theta,transfer_outbound_data);
 
-open("Mars_capture_sim.slx");
 clearvars altitude G i M mu R s theta
