@@ -23,6 +23,6 @@ rendezvous_data.orbiter_initial = struct("r_initial", r_orbiter, ...
                                          "a_centripetal", 0);
 
 t = 500;
-rendezvous_data = Rendezvous(rendezvous_data,t);
+rendezvous_data = rendezvous(rendezvous_data,t);
 
 clearvars canister_altitude canister_i canister_RA canister_theta orbiter_altitude orbiter_i orbiter_RA orbiter_theta r_canister v_canister r_orbiter v_orbiter t
