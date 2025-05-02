@@ -34,4 +34,4 @@ Mars_inbound = Mars_outbound.reset_initials(delta_t);
 %Calculate the inbound transfer (from Mars to Earth)
 transfer_inbound_data = hohmann_transfer(Mars_inbound,Earth_inbound,Sun_mu,burn_time);
 
-clearvars R_earth T_earth R_mars T_mars G M burn_time
+clearvars R_earth T_earth R_mars T_mars G M burn_time delta_t
